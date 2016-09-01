@@ -1,5 +1,4 @@
-from bottle import route, run, debug, default_app, response, BaseRequest, request
-from requests import post
+from bottle import route, run, debug, default_app, response, request
 from urllib.parse import urlencode
 import json
 
@@ -11,8 +10,10 @@ def index():
     text = request.forms.get('text')
     token = request.forms.get('token')
     response_url = request.forms.get('response_url')
+    if token != TOKEN:
+        return ""
     if not text:
-        pass
+        return ""
     lmgtfy_url = "http://lmgtfy.com/?" + urlencode({'q': text})
     response.content_type = 'application/json'
     return json.dumps({'response_type': 'in_channel', 'text': "Please, <"+ lmgtfy_url +"|allow me!>"})
