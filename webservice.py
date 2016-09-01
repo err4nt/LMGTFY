@@ -1,24 +1,24 @@
 from bottle import route, run, debug, default_app, response, request
 from urllib.parse import urlencode
 import json
+import os
 
-TOKEN=""
+TOKEN=os.getenv('TOKEN', None)
+PORT=int(os.getenv('PORT', 8000))
 
 @route('/', method='POST')
 def index():
-    channel = request.forms.get('channel')
     text = request.forms.get('text')
     token = request.forms.get('token')
-    response_url = request.forms.get('response_url')
-    if token != TOKEN:
+    if token and token != TOKEN:
         return ""
     if not text:
-        return ""
+        return "You should probably tell me to google something for someone."
     lmgtfy_url = "http://lmgtfy.com/?" + urlencode({'q': text})
     response.content_type = 'application/json'
     return json.dumps({'response_type': 'in_channel', 'text': "Please, <"+ lmgtfy_url +"|allow me!>"})
 
 app = default_app()
 
-debug(True)
-run(host='0.0.0.0', port=8000, reloader=True)
+debug(False)
+run(host='0.0.0.0', port=PORT, reloader=True)
